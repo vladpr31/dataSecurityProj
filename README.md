@@ -1,2 +1,2 @@
 # Data Security Project
-Cyptography and Stegnography.
+Cryptography and Stegnography.
