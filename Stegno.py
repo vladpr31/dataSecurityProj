@@ -1,8 +1,8 @@
-1import cv2
+import cv2
 import numpy as np
 import Crypto
 
-def to_bin(data):
+def to_bin(data): ##function which gets the msg and changes its type.
     if isinstance(data, str):
         return ''.join([ format(ord(i), "08b") for i in data ])
     elif isinstance(data, bytes) or isinstance(data, np.ndarray):
@@ -12,18 +12,18 @@ def to_bin(data):
     else:
         raise TypeError("Type not supported.")
 
-def encode(image_name, secret_data):
-    image = cv2.imread(image_name)
-    n_bytes = image.shape[0] * image.shape[1] * 3 // 8
+def encode(image_name, secret_data): ##encoding the msg into the image.
+    image = cv2.imread(image_name) ##gets the image name
+    n_bytes = image.shape[0] * image.shape[1] * 3 // 8 ##calculate the bytes.
     print("[*] Maximum bytes to encode:", n_bytes,"(<-This is the Size of pixels needed to embed the Data.)")
-    if len(secret_data) > n_bytes:
+    if len(secret_data) > n_bytes: ##if msg is to big for the picutre then we cannot hide it.
         raise ValueError("[!] Insufficient bytes, need bigger image or less data.")
     print("[*] Hiding Super Secret Message... -->",secret_data)
-    secret_data += "+++++"
+    secret_data += "+++++" ##the secret addition to the msg so we can identify the stegnographed msg.
     data_index = 0
-    binary_secret_data = to_bin(secret_data)
+    binary_secret_data = to_bin(secret_data) ##changes the msg to needed type.
     data_len = len(binary_secret_data)
-    for row in image:
+    for row in image: ##the whole stegno procedure(this is a code we used from a website):
         for pixel in row:
             r, g, b = to_bin(pixel)
             if data_index < data_len:
@@ -40,7 +40,7 @@ def encode(image_name, secret_data):
     print("[*]Secret Message Hidden![*]\n\n")
     return image
 
-def decode(image_name):
+def decode(image_name): ##decoding of the msg.
     print("[+] Searching For Super Sneaky Secrets...")
     image = cv2.imread(image_name)
     binary_data = ""
@@ -66,8 +66,8 @@ def StegnoCryp():
         input_image = input("Image Name with extension (Example-> Test.png):")
         output_image = input("Image name on save with extension (Example-> StegnoTest.png):")
         secret_data = input("Enter Your Secret Message: ")
-        secret_data=Crypto.encrypt_message(secret_data)
-        encoded_image = encode(image_name=input_image, secret_data=secret_data.decode('utf-8'))
+        secret_data=Crypto.encrypt_message(secret_data) ##crypting the msg before doing Stegno
+        encoded_image = encode(image_name=input_image, secret_data=secret_data.decode('utf-8')) ##encoding msg to image.
         cv2.imwrite(output_image, encoded_image)
     if func=='2':
         output_image = input("Image name you've saved as Stegno Image with Extension (Example -> StegnoTest.png):")
